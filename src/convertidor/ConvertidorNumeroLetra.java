@@ -8,7 +8,7 @@ package convertidor;
  * @version 1.0
  */
 public class ConvertidorNumeroLetra {
-
+    
     public Double num;
 
     private final double milMillones;
@@ -36,14 +36,15 @@ public class ConvertidorNumeroLetra {
      */
     public ConvertidorNumeroLetra(Double num) {
         this.num = num;
-        this.milMillones = Math.round(num / 1000000000.0d) % 1000;
-        this.millones = Math.round(num / 1000000) % 1000;
+        this.decimos = Math.round((num % 1) * 100) / 10;
+        this.centesimos = Math.round((num % 1) * 100) % 10;
+        this.num -= (num % 1);
+        this.milMillones = (num / 1000000000d) % 1000;
+        this.millones = (num / 1000000) % 1000;
         this.millares = (num / 1000) % 1000;
         this.centenas = (num / 100) % 10;
         this.decenas = (num / 10) % 10;
         this.unidades = (num % 10);
-        this.decimos = Math.round((num % 1) * 100) / 10;
-        this.centesimos = Math.round((num % 1) * 100) % 10;
     }
 
     public enum Unidades {
@@ -164,33 +165,33 @@ public class ConvertidorNumeroLetra {
      *
      * @return número convertido
      */
-    public String convertir() {
+    public String convert() {
         writtenNumber = new StringBuilder();
         this.getMilesMillones();
         this.getMillones();
         this.getMillares();
 
         //centenas
-        if (this.centenas == 1) {
+        if ((int) this.centenas == 1) {
             writtenNumber.append(num % 100 == 0 ? ConstantesNumeros.CIEN : ConstantesNumeros.CIENTO);
-        } else if (this.centenas > 0) {
+        } else if ((int) this.centenas > 0) {
             writtenNumber.append(" ").append(Cientos.values()[(int) this.centenas]);
         }
         //decenas
-        if (this.decenas == 1) {
-            writtenNumber.append(" ").append(Dieces.values()[(int) this.decenas % 10]);
+        if ((int) this.decenas == 1) {
+            writtenNumber.append(ConstantesNumeros.ESPACIO).append(Dieces.values()[(int) this.decenas % 10]);
             this.unidades = 0;
-        } else if (this.decenas == 2) {
+        } else if ((int) this.decenas == 2) {
             writtenNumber.append(ConstantesNumeros.ESPACIO).append(ConstantesNumeros.VEINTI).append(Unidades.values()[(int) this.unidades]);
             this.unidades = 0;
-        } else if (decenas > 1) {
+        } else if ((int) this.decenas > 1) {
             writtenNumber.append(ConstantesNumeros.ESPACIO).append(Decenas.values()[(int) this.decenas]);
-            if (this.unidades > 0) {
+            if ((int) this.unidades > 0) {
                 writtenNumber.append(ConstantesNumeros.ESPACIO).append(ConstantesNumeros.Y);
             }
         }
         //unidades
-        if (this.unidades > 0) {
+        if ((int) this.unidades > 0) {
             writtenNumber.append(ConstantesNumeros.ESPACIO).append(Unidades.values()[(int) this.unidades]);
         } else if (this.num == 0) {
             writtenNumber.append(Unidades.values()[0]);
@@ -207,10 +208,9 @@ public class ConvertidorNumeroLetra {
      */
     public void getMilesMillones() {
 
-        if ((this.milMillones == 1) && ((this.milMillones % 100) / 10) == 0 && (this.milMillones % 10) / 10 == 0) {
+        if (((int) this.milMillones == 1) && (((int) this.milMillones % 100) / 10) == 0 && ((int) this.milMillones % 10) / 10 == 0) {
             writtenNumber.append(UnidadesDecenas.values()[(int) this.milMillones]).append(ConstantesNumeros.ESPACIO).append(ConstantesNumeros.UN_MILMILLONES).append(ConstantesNumeros.ESPACIO);
         } else {
-
             if (this.milMillones > 0) {
 
                 //cienes de millar  
@@ -253,7 +253,7 @@ public class ConvertidorNumeroLetra {
      */
     public void getMillones() {
 
-        if ((this.millones == 1) && ((this.millones % 100) / 10) == 0 && (this.millones % 10) / 10 == 0) {
+        if (((int) this.millones == 1) && (((int) this.millones % 100) / 10) == 0 && ((int) this.millones % 10) / 10 == 0) {
             writtenNumber.append(UnidadesDecenas.values()[(int) this.millones]).append(ConstantesNumeros.ESPACIO).append(ConstantesNumeros.UN_MILLON).append(ConstantesNumeros.ESPACIO);
         } else {
 
@@ -298,11 +298,11 @@ public class ConvertidorNumeroLetra {
      */
     public void getMillares() {
 
-        if ((this.millares == 1) && ((this.millares % 100) / 10) == 0 && this.millares % 10 == 0) {
+        if (((int) this.millares == 1) && (((int) this.millares % 100) / 10) == 0 && (int) this.millares % 10 == 0) {
             writtenNumber.append(UnidadesDecenas.values()[0]).append(ConstantesNumeros.ESPACIO).append(ConstantesNumeros.MIL).append(ConstantesNumeros.ESPACIO);
         } else {
 
-            if (this.millares > 0) {
+            if ((int) this.millares > 0) {
 
                 //cienes de millar  
                 int tempCienDeMillar = (int) this.millares / 100;
@@ -346,28 +346,22 @@ public class ConvertidorNumeroLetra {
         writtenNumber.append(ConstantesNumeros.ESPACIO).append("CON");
 
         //decimas
-        if (this.decimos == 1) {
+        if ((int) this.decimos == 1) {
             writtenNumber.append(ConstantesNumeros.ESPACIO).append(Dieces.values()[(int) this.centesimos]);
             this.centesimos = 0;
 
-        } else if (this.decimos == 2) {
+        } else if ((int) this.decimos == 2) {
             writtenNumber.append(ConstantesNumeros.ESPACIO).append((int) this.centesimos == 0 ? Decenas.values()[(int) this.decimos] : ConstantesNumeros.VEINTI);
 
-        } else if (this.decimos > 1) {
+        } else if ((int) this.decimos > 1) {
             writtenNumber.append(ConstantesNumeros.ESPACIO).append(Decenas.values()[(int) this.decimos]);
 
-            if (this.centesimos > 0) {
+            if ((int) this.centesimos > 0) {
                 writtenNumber.append(ConstantesNumeros.ESPACIO).append(ConstantesNumeros.Y);
             }
         }
-        //cetensimas
+        //unidades
         writtenNumber.append(ConstantesNumeros.ESPACIO).append(UnidadesDecenas.values()[(int) this.centesimos]);
     }
 
-    public static void main(String[] args) {
-        ConvertidorNumeroLetra convertidor = new ConvertidorNumeroLetra(123456789.15d);
-        System.out.println(convertidor.convertir());
-        //CIENTO VEINTITRES MILLONES CUATROCIENTOS CINCUENTA Y SEIS MIL SETECIENTOS OCHENTA Y NUEVE CON QUINCE
-
-    }
 }
